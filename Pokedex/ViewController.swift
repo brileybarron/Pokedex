@@ -15,6 +15,8 @@ class ViewController: UIViewController {
     @IBOutlet weak var submitButton: UIButton!
     @IBOutlet weak var outputTextView: UITextView!
     var pokedexAPIbaseURL = "https://pokeapi.co/api/v2/pokemon/"
+    var spriteURL = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/"
+    var pokeIndex = "1"
     
     @IBAction func submitButtonTapped(_ sender: Any) {
         //checking to see if the values are there
@@ -36,12 +38,27 @@ class ViewController: UIViewController {
             switch response.result{
             case .success(let value):
                 let json = JSON(value)
-                self.outputTextView.text = json["forms"]["name"].stringValue
+                self.outputTextView.text = String(describing: json)
+                self.pokeIndex = json["game_indices"]["game_index"].stringValue
             case .failure(let error):
                 self.outputTextView.text = "Invalid selection entered or an error occured.  Please try Again!"
                 print(error.localizedDescription)
             }
         }
+        let pokeIndexComponent = pokeIndex + ".png"
+        let spriteRequestURL = spriteURL + pokeIndexComponent
+        Alamofire.request(spriteRequestURL).responseJSON { (response) in
+            switch response.result{
+            case .success(let value):
+                let json = JSON(value)
+                self.outputTextView.text = String(describing: json)
+                self.pokeIndex = json["game_indices"]["game_index"].stringValue
+            case .failure(let error):
+                self.outputTextView.text = "Invalid selection entered or an error occured.  Please try Again!"
+                print(error.localizedDescription)
+            }
+        }
+        
         
     }
     
